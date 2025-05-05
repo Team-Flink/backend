@@ -1,4 +1,4 @@
-package spring.flink.common;
+package spring.flink.domain.common;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
