@@ -1,11 +1,13 @@
 package spring.flink.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import spring.flink.domain.common.BaseEntity;
-import spring.flink.domain.enums.ChattingRoomStatus;
 
 @Entity
 @Getter
@@ -14,14 +16,13 @@ import spring.flink.domain.enums.ChattingRoomStatus;
 @DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChattingRoom extends BaseEntity {
+public class InquiryImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roomName;
+    private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
-    private ChattingRoomStatus status;
+    private String imageName;
 }

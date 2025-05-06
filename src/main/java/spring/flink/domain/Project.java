@@ -31,7 +31,7 @@ public class Project extends BaseEntity {
     private Occupation occupation;
 
     @Enumerated(EnumType.STRING)
-    private ProjectStatus projectStatus;
+    private ProjectStatus status;
 
     private Long recruitMemberCount;
 

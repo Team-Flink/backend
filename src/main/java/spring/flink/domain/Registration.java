@@ -21,5 +21,5 @@ public class Registration extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private RegistrationStatus registrationStatus;
+    private RegistrationStatus status;
 }

@@ -5,7 +5,9 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import spring.flink.domain.common.BaseEntity;
-import spring.flink.domain.enums.ChattingRoomStatus;
+import spring.flink.domain.enums.MemberStatus;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -14,14 +16,25 @@ import spring.flink.domain.enums.ChattingRoomStatus;
 @DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChattingRoom extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roomName;
+    private String nickname;
+
+    private String email;
+
+    private String password;
+
+    private String phoneNumber;
+
+    private Long reports;
+
+    private LocalDateTime inactivatedDate;
 
     @Enumerated(EnumType.STRING)
-    private ChattingRoomStatus status;
+    private MemberStatus status;
+
 }
