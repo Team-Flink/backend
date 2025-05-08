@@ -23,23 +23,32 @@ public class Project extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private String title;
 
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Occupation occupation;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ProjectStatus status;
 
+    @Column(nullable = false)
     private Long recruitMemberCount;
 
+    @Column(nullable = false)
     private Long registerMemberCount;
 
+    @Column(nullable = false, columnDefinition = "BIGINT default 0")
     private Long views;
 
+    @Column(nullable = false)
     private LocalDateTime recruitStartedAt;
 
+    @Column(nullable = false)
     private LocalDateTime recruitEndedAt;
 }

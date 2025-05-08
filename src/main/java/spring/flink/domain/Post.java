@@ -1,9 +1,6 @@
 package spring.flink.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -22,13 +19,18 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private String title;
 
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String content;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long likes;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long comments;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long views;
 }

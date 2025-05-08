@@ -21,5 +21,6 @@ public class Registration extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RegistrationStatus status;
 }

@@ -20,15 +20,18 @@ public class Profile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private String nickname;
 
     private String url;
 
     private String imageName;
 
+    @Column(nullable = false)
     private Long age;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Occupation occupation;
 
     private String portfolioUrl;

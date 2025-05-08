@@ -20,12 +20,16 @@ public class Alarm extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(100)")
     private String title;
 
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String content;
 
+    @Column(nullable = false,columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isConfirmed;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AlarmType type;
 

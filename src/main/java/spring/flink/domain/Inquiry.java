@@ -21,13 +21,17 @@ public class Inquiry extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private String title;
 
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String content;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private InquiryType type;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private InquiryStatus status;
 
