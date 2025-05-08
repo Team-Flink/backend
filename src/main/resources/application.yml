@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/flink
     username: root
-    password: mysql
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:

@@ -20,6 +20,7 @@ public class ChattingRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private String roomName;
 
     @Enumerated(EnumType.STRING)
