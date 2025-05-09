@@ -8,6 +8,9 @@ import spring.flink.domain.common.BaseEntity;
 import spring.flink.domain.enums.InquiryStatus;
 import spring.flink.domain.enums.InquiryType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -35,5 +38,11 @@ public class Inquiry extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private InquiryStatus status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
+    @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<InquiryImage> inquiryImageList = new ArrayList<>();
 }

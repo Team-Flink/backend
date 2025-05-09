@@ -7,6 +7,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import spring.flink.domain.common.BaseEntity;
 import spring.flink.domain.enums.ChattingRoomStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -25,4 +28,8 @@ public class ChattingRoom extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ChattingRoomStatus status;
+
+    @OneToMany(mappedBy = "chattingRoom", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<ChatPart> chatPartList = new ArrayList<>();
 }

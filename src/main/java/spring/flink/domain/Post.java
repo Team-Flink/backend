@@ -6,6 +6,9 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import spring.flink.domain.common.BaseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -33,4 +36,8 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long views;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<PostLikes> postLikesList = new ArrayList<>();
 }
