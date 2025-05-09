@@ -23,8 +23,10 @@ public class Profile extends BaseEntity {
     @Column(nullable = false, columnDefinition = "varchar(50)")
     private String nickname;
 
-    private String url;
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
 
+    @Column(columnDefinition = "TEXT")
     private String imageName;
 
     @Column(nullable = false)
@@ -34,8 +36,12 @@ public class Profile extends BaseEntity {
     @Column(nullable = false)
     private Occupation occupation;
 
+    @Column(columnDefinition = "TEXT")
     private String portfolioUrl;
 
+    @Column(columnDefinition = "TEXT")
     private String portfolioName;
 
+    @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL)
+    private Member member;
 }

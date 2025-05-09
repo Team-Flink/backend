@@ -9,6 +9,8 @@ import spring.flink.domain.enums.Occupation;
 import spring.flink.domain.enums.ProjectStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -51,4 +53,8 @@ public class Project extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime recruitEndedAt;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Registration> registrationList = new ArrayList<>();
 }

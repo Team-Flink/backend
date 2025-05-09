@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/flink
     username: root
-    password: 1234
+    password: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
@@ -15,5 +15,8 @@ spring:
         format_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: update
+          auto: create
         default_batch_fetch_size: 1000
+logging:
+  level:
+    org.hibernate.SQL: TRACE

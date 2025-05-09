@@ -21,4 +21,8 @@ public class Message extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "varchar(255)")
     private String detailMessage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_part_id")
+    private ChatPart chatPart;
 }
