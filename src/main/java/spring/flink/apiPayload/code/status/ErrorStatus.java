@@ -20,7 +20,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // 멤버 관려 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
-
+    EMAIL_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4003", "이미 존재하는 이메일입니다."),
+    PHONENUMBER_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4004", "이미 존재하는 휴대폰 번호입니다."),
+    EMAIL_WRONG(HttpStatus.BAD_REQUEST, "MEMBER4005", "가입하지 않은 이메일 주소입니다."),
+    PASSWORD_WRONG(HttpStatus.BAD_REQUEST, "MEMBER4006", "비밀번호가 틀렸습니다."),
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다.");
 
