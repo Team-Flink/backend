@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import spring.flink.apiPayload.code.BaseCode;
-import spring.flink.apiPayload.code.status.SuccessStatus;
+import spring.flink.apiPayload.status.ErrorStatus;
+import spring.flink.apiPayload.status.SuccessStatus;
 
 @Getter
 @AllArgsConstructor
@@ -23,15 +23,18 @@ public class ApiResponse <T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-    //성공한 경우 응답
+    // 요청 성공 - 201 OK
     public static <T> ApiResponse<T> onSuccess(T result) {
         return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
     }
 
-    public static <T> ApiResponse<T> of(BaseCode code, T result) {
-        return new ApiResponse<>(true, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
+    // 리소스 생성 - 201 CREATED
+    public static <T> ApiResponse<T> created(T result) {
+        return new ApiResponse<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), result);
     }
-    public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
-        return new ApiResponse<>(false, code, message, data);
+
+    // 요청 실패 - ExceptionAdvice에서 사용
+    public static <T> ApiResponse<T> onFailure(ErrorStatus errorStatus, T data) {
+        return new ApiResponse<>(false, errorStatus.getCode(), errorStatus.getMessage(), data);
     }
 }
