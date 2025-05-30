@@ -15,12 +15,12 @@ public class MemberResponseDTO {
         LocalDateTime createdAt;
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MemberLoginResultDTO{
-        String accessToken;
-        //String refreshToken;
-    }
+//    @Builder
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class MemberLoginResultDTO{
+//        String accessToken;
+//        String refreshToken;
+//    }
 }

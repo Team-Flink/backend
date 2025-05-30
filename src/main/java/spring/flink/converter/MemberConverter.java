@@ -24,10 +24,11 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDTO.MemberLoginResultDTO toTokenDTO(String token){
-        return MemberResponseDTO.MemberLoginResultDTO.builder()
-                .accessToken(token)
-                .build();
-    }
+//    public static MemberResponseDTO.MemberLoginResultDTO toTokenDTO(String accessToken, String refreshToken){
+//        return MemberResponseDTO.MemberLoginResultDTO.builder()
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build();
+//    }
 
 }
