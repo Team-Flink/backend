@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
     PHONENUMBER_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4004", "이미 존재하는 휴대폰 번호입니다."),
     EMAIL_WRONG(HttpStatus.BAD_REQUEST, "MEMBER4005", "가입하지 않은 이메일 주소입니다."),
     PASSWORD_WRONG(HttpStatus.BAD_REQUEST, "MEMBER4006", "비밀번호가 틀렸습니다."),
+    NOT_VALID_TOKEN(HttpStatus.BAD_REQUEST, "MEMBER4007", "유효한 토큰이 아닙니다"),
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다.");
 
