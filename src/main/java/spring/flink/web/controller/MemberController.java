@@ -5,24 +5,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import spring.flink.apiPayload.ApiResponse;
-import spring.flink.apiPayload.code.status.ErrorStatus;
-import spring.flink.apiPayload.exception.GeneralException;
-import spring.flink.converter.MemberConverter;
-import spring.flink.domain.Member;
 import spring.flink.service.MemberService;
 import spring.flink.web.dto.MemberRequestDTO;
 import spring.flink.web.dto.MemberResponseDTO;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/member")
@@ -77,8 +67,8 @@ public class MemberController {
 
     @PostMapping("/delete")
     @Operation(summary = "회원 탈퇴 API")
-    public ResponseEntity<ApiResponse<?>> delete(@RequestHeader("Authorization") String accessToken){
-
+    public ResponseEntity<ApiResponse<?>> delete(HttpServletRequest request) throws Exception{
+        memberService.deleteMember(request);
         return ResponseEntity.ok().body(ApiResponse.onSuccess(null));
     }
 

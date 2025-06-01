@@ -1,6 +1,5 @@
 package spring.flink.service;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -11,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import spring.flink.apiPayload.code.status.ErrorStatus;
 import spring.flink.apiPayload.exception.GeneralException;
-import spring.flink.apiPayload.exception.handler.MemberHandler;
+import spring.flink.apiPayload.status.ErrorStatus;
+import spring.flink.domain.enums.MemberStatus;
+import spring.flink.security.auth.MemberDetailService;
 import spring.flink.security.jwt.JwtProperties;
 import spring.flink.security.jwt.JwtTokenProvider;
 import spring.flink.converter.MemberConverter;
@@ -42,6 +41,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redistemplate;
     private final JwtProperties jwtProperties;
+    private final MemberDetailService memberDetailService;
 
     private int number;
     private String accessToken;
@@ -51,10 +51,10 @@ public class MemberService {
     public MemberResponseDTO.MemberJoinResponseDTO joinMember(MemberRequestDTO.MemberJoinDTO request) throws Exception{
         // 이메일, 전화번호 중복 여부 확인
         if(memberRepository.existsByEmail(request.getEmail())){
-            throw new MemberHandler(ErrorStatus.EMAIL_EXIST);
+            throw new GeneralException(ErrorStatus.EMAIL_EXIST);
         }
         if(memberRepository.existsByPhoneNumber(request.getPhoneNumber())){
-            throw new MemberHandler(ErrorStatus.PHONENUMBER_EXIST);
+            throw new GeneralException(ErrorStatus.PHONENUMBER_EXIST);
         }
         Member member = MemberConverter.toMember(request);
 
@@ -105,10 +105,10 @@ public class MemberService {
     public void login(MemberRequestDTO.MemberLoginDTO request){
         // 아이디와 비밀번호가 맞는지 확인
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.EMAIL_WRONG));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.EMAIL_WRONG));
 
         if(!bCryptPasswordEncoder.matches(request.getPassword(), member.getPassword())){
-            throw new MemberHandler(ErrorStatus.PASSWORD_WRONG);
+            throw new GeneralException(ErrorStatus.PASSWORD_WRONG);
         }
         // JWT 토큰 생성
         accessToken = jwtTokenProvider.makeToken(member.getId(), member.getEmail(),1);
@@ -116,10 +116,7 @@ public class MemberService {
 
         // redis에 refresh 토큰 저장
         ValueOperations<String, Object> ops = redistemplate.opsForValue();
-        ops.set(request.getEmail(), accessToken, jwtProperties.getRefreshExpireMS(), TimeUnit.SECONDS);
-        // 클라이언트에게 2개의 토큰 전달
-        //MemberResponseDTO.MemberLoginResultDTO result = MemberConverter.toTokenDTO(accessToken, refreshToken);
-        return ;
+        ops.set(request.getEmail(), refreshToken, jwtProperties.getRefreshExpireMS(), TimeUnit.MILLISECONDS);
     }
 
     // 로그아웃
@@ -133,6 +130,17 @@ public class MemberService {
         redistemplate.opsForValue().set(token, "logout");
     }
 
+    // 회원 탈퇴
+    public void deleteMember(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveToken(request);
+        if(!jwtTokenProvider.validateToken(token)){
+            throw new GeneralException(ErrorStatus.NOT_VALID_TOKEN);
+        }
+        String email = jwtTokenProvider.getEmail(token);
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new GeneralException(ErrorStatus.EMAIL_WRONG));
+
+        member.setMemberStatus(MemberStatus.INACTIVE);
+    }
 
 
 }
