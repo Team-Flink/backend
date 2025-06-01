@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import spring.flink.apiPayload.exception.GeneralException;
+import spring.flink.apiPayload.status.ErrorStatus;
 import spring.flink.security.auth.MemberDetail;
 import spring.flink.security.auth.MemberDetailService;
 
@@ -55,22 +57,10 @@ public class JwtTokenProvider{
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch(Exception e){
+        }
+        catch(Exception e){
             return false;
-        }  // Handler 받으면 삭제하기
-        /* catch (SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
-            throw new JwtExceptionHandler(ErrorStatus.WRONG_TYPE_SIGNATURE.getMessage(), e);
-        } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
-            throw new JwtExceptionHandler(ErrorStatus.TOKEN_EXPIRED.getMessage(), e);
-        } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
-            throw new JwtExceptionHandler(ErrorStatus.WRONG_TYPE_TOKEN.getMessage(), e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
-            throw new JwtExceptionHandler(ErrorStatus.NOT_VALID_TOKEN.getMessage(), e);
-        }*/
+        }
 
     }
 
