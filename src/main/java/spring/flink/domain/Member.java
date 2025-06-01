@@ -73,4 +73,8 @@ public class Member extends BaseEntity {
     public void encodePassword(String password) {
         this.password = password;
     }
+
+    public void setMemberStatus(MemberStatus status) {
+        this.status = status;
+    }
 }
