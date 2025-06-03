@@ -72,5 +72,14 @@ public class MemberController {
         return ResponseEntity.ok().body(ApiResponse.onSuccess(null));
     }
 
+    @PostMapping("/refresh")
+    @Operation(summary = "액세스 토큰 만료시, 리프레시 토큰으로 액세스 토큰 재발급 API")
+    public ResponseEntity<ApiResponse<?>> refresh(HttpServletRequest request) throws Exception{
+        String token = memberService.reissue(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        return ResponseEntity.ok().headers(headers).body(ApiResponse.onSuccess(null));
+    }
+
 
 }

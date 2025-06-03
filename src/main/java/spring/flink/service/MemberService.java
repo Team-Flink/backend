@@ -25,6 +25,7 @@ import spring.flink.web.dto.MemberRequestDTO;
 import spring.flink.web.dto.MemberResponseDTO;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -139,7 +140,27 @@ public class MemberService {
         String email = jwtTokenProvider.getEmail(token);
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new GeneralException(ErrorStatus.EMAIL_WRONG));
 
-        member.setMemberStatus(MemberStatus.INACTIVE);
+        member.setMemberStatus(MemberStatus.INACTIVE, LocalDateTime.now());
+
+    }
+
+    // 리프레시 토큰으로 액세스 토큰 재발급
+    public String reissue(HttpServletRequest request){
+        // 리프레시 토큰이 유효한지 확인
+        String token = jwtTokenProvider.resolveToken(request);
+        if(!jwtTokenProvider.validateToken(token)){
+            throw new GeneralException(ErrorStatus.NOT_VALID_TOKEN);
+        }
+        // 토큰 만료 여부 확인
+        if(jwtTokenProvider.isExpired(token)){
+            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED);
+        }
+        String email = jwtTokenProvider.getEmail(token);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.EMAIL_WRONG));
+        String accessToken = jwtTokenProvider.makeToken(member.getId(), email, 1);
+
+        return accessToken;
     }
 
 
