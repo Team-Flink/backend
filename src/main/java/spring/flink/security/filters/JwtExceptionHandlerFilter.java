@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import spring.flink.apiPayload.ApiResponse;
 import spring.flink.apiPayload.exception.GeneralException;
+import spring.flink.apiPayload.status.ErrorStatus;
 
 import java.io.IOException;
 
@@ -24,7 +25,6 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
             setErrorResponse(HttpStatus.UNAUTHORIZED, request, response, ex);
         }
 
-
     }
 
     public void setErrorResponse(HttpStatus status, HttpServletRequest req,
@@ -33,7 +33,7 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
 
-        ApiResponse<?> apiResponse = ApiResponse.onFailure(HttpStatus.UNAUTHORIZED.name(), "COMMON401", ex.getMessage());
+        ApiResponse<?> apiResponse = ApiResponse.onFailure(ErrorStatus._UNAUTHORIZED, null);
         res.getWriter().write(new ObjectMapper().writeValueAsString(apiResponse));
     }
 
