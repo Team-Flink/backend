@@ -11,19 +11,21 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import spring.flink.apiPayload.ApiResponse;
+import spring.flink.apiPayload.status.ErrorStatus;
 
 import java.io.IOException;
 
 @Slf4j
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+// 인증되지 않은 사용자가 요청을 줄 떄
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
         log.error("Not Authenticated Request", authException);
         ApiResponse<Object> apiResponse =
-                ApiResponse.onFailure(HttpStatus.UNAUTHORIZED.name(), "COMMON401", "인증이 필요합니다.");
+                ApiResponse.onFailure(ErrorStatus._UNAUTHORIZED, null);
         String responseBody = new ObjectMapper().writeValueAsString(apiResponse);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
