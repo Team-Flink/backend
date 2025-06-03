@@ -23,6 +23,8 @@ public enum ErrorStatus {
     EMAIL_WRONG(HttpStatus.BAD_REQUEST, "MEMBER4005", "가입하지 않은 이메일 주소입니다."),
     PASSWORD_WRONG(HttpStatus.BAD_REQUEST, "MEMBER4006", "비밀번호가 틀렸습니다."),
     NOT_VALID_TOKEN(HttpStatus.BAD_REQUEST, "MEMBER4007", "유효한 토큰이 아닙니다"),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "MEMBER4008", "유효한 토큰이 아닙니다"),
+    TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "MEMBER4009", "토큰이 만료되었습니다. 로그인하세요"),
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다.");
 
