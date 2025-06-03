@@ -80,4 +80,15 @@ public class JwtTokenProvider{
                 .get("email", String.class);
     }
 
+    public boolean isExpired(String token) {
+        SecretKey secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration()
+                .before(new Date());
+    }
+
 }
