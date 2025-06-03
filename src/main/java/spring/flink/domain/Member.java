@@ -74,7 +74,8 @@ public class Member extends BaseEntity {
         this.password = password;
     }
 
-    public void setMemberStatus(MemberStatus status) {
+    public void setMemberStatus(MemberStatus status, LocalDateTime inactivatedDate) {
         this.status = status;
+        this.inactivatedDate = inactivatedDate;
     }
 }
