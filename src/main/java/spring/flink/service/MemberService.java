@@ -16,7 +16,6 @@ import spring.flink.apiPayload.exception.GeneralException;
 import spring.flink.apiPayload.status.ErrorStatus;
 import spring.flink.domain.enums.MemberStatus;
 import spring.flink.security.auth.MemberDetailService;
-import spring.flink.security.jwt.JwtProperties;
 import spring.flink.security.jwt.JwtTokenProvider;
 import spring.flink.converter.MemberConverter;
 import spring.flink.domain.Member;
@@ -38,15 +37,11 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender javaMailSender;
 
-    //private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redistemplate;
-    private final JwtProperties jwtProperties;
     private final MemberDetailService memberDetailService;
 
     private int number;
-    private String accessToken;
-    private String refreshToken;
 
     // 일반 회원 가입
     public MemberResponseDTO.MemberJoinResponseDTO joinMember(MemberRequestDTO.MemberJoinDTO request) throws Exception{
@@ -103,7 +98,7 @@ public class MemberService {
     }
 
     // 로그인
-    public void login(MemberRequestDTO.MemberLoginDTO request){
+    public MemberResponseDTO.MemberLoginResultDTO login(MemberRequestDTO.MemberLoginDTO request){
         // 아이디와 비밀번호가 맞는지 확인
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.EMAIL_WRONG));
@@ -112,23 +107,33 @@ public class MemberService {
             throw new GeneralException(ErrorStatus.PASSWORD_WRONG);
         }
         // JWT 토큰 생성
-        accessToken = jwtTokenProvider.makeToken(member.getId(), member.getEmail(),1);
-        refreshToken = jwtTokenProvider.makeToken(member.getId(), member.getEmail(),0);
+        String accessToken = jwtTokenProvider.makeToken(member.getId(), member.getEmail(),1);
+        String refreshToken = jwtTokenProvider.makeToken(member.getId(), member.getEmail(),0);
+
+        Long refreshEx = jwtTokenProvider.getExpiration(refreshToken);
 
         // redis에 refresh 토큰 저장
         ValueOperations<String, Object> ops = redistemplate.opsForValue();
-        ops.set(request.getEmail(), refreshToken, jwtProperties.getRefreshExpireMS(), TimeUnit.MILLISECONDS);
+        ops.set("refresh"+request.getEmail(), refreshToken, refreshEx, TimeUnit.MILLISECONDS);
+        return new MemberResponseDTO.MemberLoginResultDTO(accessToken, refreshToken);
     }
 
     // 로그아웃
-    public void logoutMember(HttpServletRequest request){
-        String token = jwtTokenProvider.resolveToken(request);
+    public void logoutMember(HttpServletRequest request, String refreshToken){
+        String accessToken = jwtTokenProvider.resolveToken(request);
         // 토큰이 존재하는지 확인
-        if(!jwtTokenProvider.validateToken(token)){
+        if(!jwtTokenProvider.validateToken(accessToken)){
             throw new GeneralException(ErrorStatus.NOT_VALID_TOKEN);
         }
+        if(!jwtTokenProvider.validateToken(refreshToken)){
+            throw new GeneralException(ErrorStatus.NOT_VALID_REFRESHTOKEN);
+        }
+        String email = jwtTokenProvider.getEmail(accessToken);
+        if(redistemplate.opsForValue().get("refresh"+email) != null){
+            redistemplate.delete("refresh"+email);
+        }
         // 해당 액세스 토큰 로그아웃 처리하기
-        redistemplate.opsForValue().set(token, "logout");
+        redistemplate.opsForValue().set(accessToken, "logout", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS);
     }
 
     // 회원 탈퇴
@@ -145,15 +150,10 @@ public class MemberService {
     }
 
     // 리프레시 토큰으로 액세스 토큰 재발급
-    public String reissue(HttpServletRequest request){
+    public String reissue(String token){
         // 리프레시 토큰이 유효한지 확인
-        String token = jwtTokenProvider.resolveToken(request);
         if(!jwtTokenProvider.validateToken(token)){
-            throw new GeneralException(ErrorStatus.NOT_VALID_TOKEN);
-        }
-        // 토큰 만료 여부 확인
-        if(jwtTokenProvider.isExpired(token)){
-            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED);
+            throw new GeneralException(ErrorStatus.NOT_VALID_REFRESHTOKEN);
         }
         String email = jwtTokenProvider.getEmail(token);
         Member member = memberRepository.findByEmail(email)
