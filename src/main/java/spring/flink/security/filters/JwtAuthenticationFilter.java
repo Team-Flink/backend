@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import spring.flink.security.jwt.JwtProperties;
 import spring.flink.security.jwt.JwtTokenProvider;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtTokenProvider.resolveToken(request);
 
         // 토큰이 유효한지 확인
-        if(jwtTokenProvider.validateToken(token)){
+        if(token != null && jwtTokenProvider.validateToken(token)){
             // 로그 아웃되었는지 여부 확인
             String isLogout = (String) redisTemplate.opsForValue().get(token);
             if(ObjectUtils.isEmpty(isLogout)){
