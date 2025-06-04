@@ -43,6 +43,8 @@ public class SecurityConfig {
             "/image/**",
             "/swagger/**",
             "/swagger-ui/**",
+            "/swagger-ui/index.html",
+            "/favicon.ico",
             "/h2/**"
     };
 
@@ -72,7 +74,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(jwtAccessDeniedHandler));
         // Http Security 설정 구성
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/member/login", "member/signup",  "member/signup/email", "member/signup/email/verify").permitAll()
+                .requestMatchers("/member/login", "/member/signup",  "/member/signup/email", "/member/signup/email/verify").permitAll()
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
