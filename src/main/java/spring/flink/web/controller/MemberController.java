@@ -62,9 +62,8 @@ public class MemberController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃  API")
-    public ResponseEntity<ApiResponse<?>> logout(HttpServletRequest request,
-                                                 @RequestParam("refresh-token") String refreshToken) throws Exception{
-        memberService.logoutMember(request, refreshToken);
+    public ResponseEntity<ApiResponse<?>> logout(HttpServletRequest request) throws Exception{
+        memberService.logoutMember(request);
         return ResponseEntity.ok().body(ApiResponse.onSuccess(null));
     }
 
@@ -77,7 +76,7 @@ public class MemberController {
 
     @PostMapping("/refresh")
     @Operation(summary = "액세스 토큰 만료시, 리프레시 토큰으로 액세스 토큰 재발급 API")
-    public ResponseEntity<ApiResponse<?>> refresh(@RequestParam("refresh-token") String refreshToken) throws Exception{
+    public ResponseEntity<ApiResponse<?>> refresh(@RequestHeader("refresh-token") String refreshToken) throws Exception{
         String token = memberService.reissue(refreshToken);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
