@@ -26,6 +26,7 @@ public enum ErrorStatus {
     WRONG_TYPE_TOKEN(HttpStatus.BAD_REQUEST, "MEMBER409", "지원되지 않는 JWT 토큰입니다."),
     WRONG_TYPE_SIGNATURE(HttpStatus.BAD_REQUEST, "MEMBER4010", "잘못된 JWT 서명입니다."),
     NOT_VALID_REFRESHTOKEN(HttpStatus.BAD_REQUEST, "MEMBER4011", "유효한 리프레시 토큰이 아닙니다."),
+    WRONG_EMAIL_VERIFICATOIN(HttpStatus.BAD_REQUEST, "MEMBER4012", "이메일 인증번호가 틀렸습니다"),
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다.");
 

@@ -41,8 +41,6 @@ public class MemberService {
     private final RedisTemplate<String, Object> redistemplate;
     private final MemberDetailService memberDetailService;
 
-    private int number;
-
     // 일반 회원 가입
     public MemberResponseDTO.MemberJoinResponseDTO joinMember(MemberRequestDTO.MemberJoinDTO request) throws Exception{
         // 이메일, 전화번호 중복 여부 확인
@@ -65,7 +63,7 @@ public class MemberService {
     // 이메일 인증번호 생성
     public void sendMessage(String email){
         // 6자리 인증번호 생성
-        number = (int)(Math.random() * 90000)+100000;
+        int number = (int)(Math.random() * 90000)+100000;
         // 메시지 생성
         MimeMessage message = javaMailSender.createMimeMessage();
         try{
@@ -93,7 +91,7 @@ public class MemberService {
         ValueOperations<String, Object> ops = redistemplate.opsForValue();
         String code = (String) ops.get("EmailCode"+email);
         if(!code.equals(userCode)){
-            throw new GeneralException(ErrorStatus.EMAIL_WRONG);
+            throw new GeneralException(ErrorStatus.WRONG_EMAIL_VERIFICATOIN);
         }
     }
 
@@ -119,14 +117,11 @@ public class MemberService {
     }
 
     // 로그아웃
-    public void logoutMember(HttpServletRequest request, String refreshToken){
+    public void logoutMember(HttpServletRequest request){
         String accessToken = jwtTokenProvider.resolveToken(request);
         // 토큰이 존재하는지 확인
         if(!jwtTokenProvider.validateToken(accessToken)){
             throw new GeneralException(ErrorStatus.NOT_VALID_TOKEN);
-        }
-        if(!jwtTokenProvider.validateToken(refreshToken)){
-            throw new GeneralException(ErrorStatus.NOT_VALID_REFRESHTOKEN);
         }
         String email = jwtTokenProvider.getEmail(accessToken);
         if(redistemplate.opsForValue().get("refresh"+email) != null){
