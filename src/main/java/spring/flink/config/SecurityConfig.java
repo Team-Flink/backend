@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import spring.flink.security.filters.JwtAccessDeniedHandler;
@@ -22,8 +23,11 @@ import spring.flink.security.filters.JwtAuthenticationEntryPoint;
 import spring.flink.security.filters.JwtAuthenticationFilter;
 import spring.flink.security.filters.JwtExceptionHandlerFilter;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
@@ -72,21 +76,25 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+    public CorsConfigurationSource getCorsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setMaxAge(3600L);
-        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-        return configuration;
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "refresh-token"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 보안 설정 비활성화
         http.csrf((csrf) -> csrf.disable());
+        http.cors(withDefaults());
 
         http.exceptionHandling((exception) -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
