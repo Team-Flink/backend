@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import spring.flink.domain.common.BaseEntity;
+import spring.flink.domain.enums.MemberRole;
 import spring.flink.domain.enums.MemberStatus;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, columnDefinition = "varchar(20)")
     private String nickname;
 
-    @Column(nullable = false, columnDefinition = "varchar(30)")
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -42,8 +43,12 @@ public class Member extends BaseEntity {
     private LocalDateTime inactivatedDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
     private MemberStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'USER'")
+    private MemberRole role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     @Builder.Default
@@ -64,4 +69,13 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Registration> registrationList = new ArrayList<>();
+
+    public void encodePassword(String password) {
+        this.password = password;
+    }
+
+    public void setMemberStatus(MemberStatus status, LocalDateTime inactivatedDate) {
+        this.status = status;
+        this.inactivatedDate = inactivatedDate;
+    }
 }
