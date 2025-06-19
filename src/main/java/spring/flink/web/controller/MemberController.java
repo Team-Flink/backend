@@ -76,7 +76,7 @@ public class MemberController {
 
     @PostMapping("/refresh")
     @Operation(summary = "액세스 토큰 만료시, 리프레시 토큰으로 액세스 토큰 재발급 API")
-    public ResponseEntity<ApiResponse<?>> refresh(@RequestHeader("refresh-token") String refreshToken) throws Exception{
+    public ResponseEntity<ApiResponse<?>> refresh(@RequestHeader("Refresh-Token") String refreshToken) throws Exception{
         String token = memberService.reissue(refreshToken);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
