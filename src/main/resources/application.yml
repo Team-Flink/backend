@@ -63,3 +63,4 @@ spring:
 logging:
   level:
     org.hibernate.SQL: TRACE
+    org.springframework.security: DEBUG

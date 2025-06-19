@@ -47,7 +47,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
 
-    private static final String[] AUTH_WHITELIST = {
+    public static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/v3/api-docs/**",
             "/configuration/ui",
@@ -56,12 +56,19 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/webjars/**",
             "/file/**",
-            "/image/**",
+            "/images/**",
+            "/css/**",
+            "/js/**",
             "/swagger/**",
             "/swagger-ui/**",
             "/swagger-ui/index.html",
             "/favicon.ico",
             "/h2/**"
+    };
+
+    public static final String[] OAUTH_WHITELIST = {
+            "/login", "/login/oauth2/code/**", "/oauth2/authorization/**", "/oauth2/**",
+            "/login/oauth2/**", "/"
     };
 
     // 비밀 번호 암호화
@@ -105,15 +112,25 @@ public class SecurityConfig {
         // Session
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // Form Login
+        http.formLogin(AbstractHttpConfigurer::disable);
+        // Http Basic
+        http.httpBasic(AbstractHttpConfigurer::disable);
         // Exception Handling
         http.exceptionHandling((exception) -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler));
+        // OAuth2
+        http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/")
+                .failureUrl("/login?error"));
         // Http Security 설정 구성
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/member/login", "/member/signup",  "/member/signup/email", "/member/signup/email/verify").permitAll()
-                .requestMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated())
+                        .requestMatchers("/member/login", "/member/signup", "/member/signup/email", "/member/signup/email/verify").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(OAUTH_WHITELIST).permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionHandlerFilter, JwtAuthenticationFilter.class);
 
