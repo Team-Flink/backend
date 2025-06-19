@@ -67,7 +67,7 @@ public class SecurityConfig {
     };
 
     public static final String[] OAUTH_WHITELIST = {
-            "/login", "/login/oauth2/code/**", "/oauth2/authorization/**", "/oauth2/**",
+            "/login/oauth2/code/**", "/oauth2/authorization/**", "/oauth2/**",
             "/login/oauth2/**", "/"
     };
 
@@ -96,7 +96,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(false);
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setMaxAge(3600L);
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "refresh-token"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh-Token"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -120,11 +120,6 @@ public class SecurityConfig {
         http.exceptionHandling((exception) -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler));
-        // OAuth2
-//        http.oauth2Login(oauth2 -> oauth2
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/")
-//                .failureUrl("/login?error"));
         // Http Security 설정 구성
         http.authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/member/login", "/member/signup", "/member/signup/email", "/member/signup/email/verify").permitAll()
