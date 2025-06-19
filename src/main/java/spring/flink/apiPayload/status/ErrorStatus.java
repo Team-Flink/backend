@@ -27,9 +27,11 @@ public enum ErrorStatus {
     WRONG_TYPE_SIGNATURE(HttpStatus.BAD_REQUEST, "MEMBER4010", "잘못된 JWT 서명입니다."),
     NOT_VALID_REFRESHTOKEN(HttpStatus.BAD_REQUEST, "MEMBER4011", "유효한 리프레시 토큰이 아닙니다."),
     WRONG_EMAIL_VERIFICATOIN(HttpStatus.BAD_REQUEST, "MEMBER4012", "이메일 인증번호가 틀렸습니다"),
-    // 예시,,,
-    ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다.");
 
+    // OAuth2
+    UNSUPPORTED_SOCIAL(HttpStatus.BAD_REQUEST, "OAUTH4001", "지원하지 않는 소셜 로그인 방식입니다."),
+    PARSE_ERROR(HttpStatus.BAD_REQUEST, "OAUTH4002", "응답이 올바르지 않아 파싱 중 오류가 발생했습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
