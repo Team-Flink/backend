@@ -111,7 +111,7 @@ public class SecurityConfig {
         http.cors(withDefaults());
         // Session
         http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         // Form Login
         http.formLogin(AbstractHttpConfigurer::disable);
         // Http Basic
@@ -121,10 +121,10 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler));
         // OAuth2
-        http.oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")
-                .defaultSuccessUrl("/")
-                .failureUrl("/login?error"));
+//        http.oauth2Login(oauth2 -> oauth2
+//                .loginPage("/login")
+//                .defaultSuccessUrl("/")
+//                .failureUrl("/login?error"));
         // Http Security 설정 구성
         http.authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/member/login", "/member/signup", "/member/signup/email", "/member/signup/email/verify").permitAll()
