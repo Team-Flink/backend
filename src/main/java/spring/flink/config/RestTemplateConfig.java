@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+// 외부 API 통신
 @Configuration
 public class RestTemplateConfig {
 

@@ -3,8 +3,11 @@ package spring.flink.security.oauth2.dto.provider;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 
+// 카카오 소셜 로그인 유저의 카카오 액세스 토큰과 정보를 담는 DTO
+// @JsonIgnoreProperties로 DTO에 맞지 않는 결과는 무시
 public class KakaoUserInfo {
 
+    // 카카오 액세스 토큰
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class OAuth2Token {
@@ -16,6 +19,7 @@ public class KakaoUserInfo {
         private int refresh_token_expires_in;
     }
 
+    // 유저 정보
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class KakaoProfile {
@@ -30,6 +34,7 @@ public class KakaoUserInfo {
             private String nickname;
         }
 
+        // 유저 정보 중 대부분 여기서 값을 꺼냄
         @Getter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class KakaoAccount {

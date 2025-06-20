@@ -32,14 +32,17 @@ public class OAuth2Controller {
             @RequestParam("code") String code,
             @PathVariable("provider") String provider) {
 
+        // Social에 맞는 OAuth2Service 얻기
         Social social = OAuth2ProviderResolver.resolve(provider);
         OAuth2Service oAuth2Service = serviceFactory.getOAuth2Service(social);
 
+        // 해당 OAuth2Service로 accessToken과 refreshToken 만들기
         MemberResponseDTO.MemberLoginResultDTO result = oAuth2Service.oAuth2Login(code);
 
+        // 헤더에 담아 반환하기
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + result.getAccessToken());
-        headers.set("refresh-token", result.getRefreshToken());
+        headers.set("Refresh-Token", result.getRefreshToken());
 
         return ResponseEntity.ok().headers(headers).body(ApiResponse.onSuccess(null));
     }

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// Social과 OAuth2Service 구현체를 맵으로 저장
+// Social에 맞는 OAuth2Service 구현체를 꺼내는 용도
 @Component
 public class OAuth2ServiceFactory {
 

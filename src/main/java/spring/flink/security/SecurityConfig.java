@@ -82,6 +82,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetailsService);
 
+        // 다른 AuthenticationProvider 만들면 아래 리스트에 추가
         List<AuthenticationProvider> providers = List.of(provider);
         return new ProviderManager(providers);
     }

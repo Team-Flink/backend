@@ -33,11 +33,17 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
     @Override
     public MemberResponseDTO.MemberLoginResultDTO oAuth2Login(String code) {
+
+        // kakaoUtil에 인가 코드를 넘겨 카카오 액세스 토큰 요청
         KakaoUserInfo.OAuth2Token token = kakaoUtil.requestToken(code);
+
+        // kakaoUtil에 액세스 토큰을 넘겨 유저 정보 요청
         KakaoUserInfo.KakaoProfile profile = kakaoUtil.requestProfile(token);
         String email = profile.getKakao_account().getEmail();
         String nickname = profile.getKakao_account().getProfile().getNickname();
 
+        // 이미 있는 유저라면 꺼내고, 아니라면 DB에 새로 저장
+        // Social이 LOCAL이 아닌(소셜 로그인) 사용자는 password가 필요 없지만 일단 임시로 저장함
         Member member = memberRepository.findByEmail(email).orElseGet(() -> {
             Member newMember = OAuth2Converter
                     .toMember(Social.KAKAO, email, nickname,
@@ -45,11 +51,14 @@ public class KakaoOAuth2Service implements OAuth2Service {
             return memberRepository.save(newMember);
         });
 
+        // 액세스 토큰과 리프레시 토큰 발급
+        // 리프레시 토큰은 Redis에 따로 저장
         String accessToken = jwtTokenProvider.makeToken(member.getId(),email,1);
         String refreshToken = jwtTokenProvider.makeToken(member.getId(),email,2);
         long refreshTokenEx = jwtTokenProvider.getExpiration(refreshToken);
         redisTemplate.opsForValue().set("refresh"+email, refreshToken, refreshTokenEx, TimeUnit.MILLISECONDS);
 
+        // 액세스 토큰으로 Authentication을 만들어 SecurityContextHolder에 저장
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

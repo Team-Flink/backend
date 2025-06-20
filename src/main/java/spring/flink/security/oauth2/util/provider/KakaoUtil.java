@@ -36,13 +36,15 @@ public class KakaoUtil {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    // 인가 코드로 액세스 토큰 발급 요청
+    // 인가 코드(code)로 카카오 액세스 토큰(token) 발급 요청
     public KakaoUserInfo.OAuth2Token requestToken(String code) {
 
+        // restTemplate에 넣을 HttpEntity의 header
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type",
                 "application/x-www-form-urlencoded;charset=utf-8");
 
+        // restTemplate에 넣을 HttpEntity의 body
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
         map.add("client_id", clientId);
@@ -50,10 +52,14 @@ public class KakaoUtil {
         map.add("code", code);
 //        map.add("client_secret", clientSecret);
 
+        // restTemplate에 넣을 HttpEntity (POST라서 body도 필요)
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        // restTemplate로 카카오에 카카오 액세스 토큰 요청(POST)해서 String으로 받아오기
         ResponseEntity<String> response = restTemplate
                 .exchange(tokenUrl, HttpMethod.POST, request, String.class);
 
+        // try-catch로 String으로 받아온 결과에서 token 추출
         KakaoUserInfo.OAuth2Token token = null;
         try {
             token = objectMapper.readValue(response.getBody(), KakaoUserInfo.OAuth2Token.class);
@@ -63,17 +69,22 @@ public class KakaoUtil {
         return token;
     }
 
-    // 액세스 토큰으로 유저 정보 요청
+    // 카카오 액세스 토큰(token)으로 유저 정보(profile) 요청
     public KakaoUserInfo.KakaoProfile requestProfile(KakaoUserInfo.OAuth2Token token) {
 
+        // restTemplate에 넣을 HttpEntity의 header
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         headers.add("Authorization", "Bearer " + token.getAccess_token());
 
+        // restTemplate에 넣을 HttpEntity (GET이라 body 필요 없음)
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+
+        // restTemplate로 카카오에 유저 정보 요청(GET)해서 String으로 받아오기
         ResponseEntity<String> response = restTemplate
                 .exchange(userInfoUrl, HttpMethod.GET, request, String.class);
 
+        // try-catch로 String으로 받아온 결과에서 profile 추출
         KakaoUserInfo.KakaoProfile profile = null;
         try {
             profile = objectMapper.readValue(response.getBody(), KakaoUserInfo.KakaoProfile.class);
