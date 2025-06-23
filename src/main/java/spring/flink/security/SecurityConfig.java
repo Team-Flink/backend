@@ -1,14 +1,17 @@
-package spring.flink.config;
+package spring.flink.security;
 
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +45,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
 
-    private static final String[] AUTH_WHITELIST = {
+    public static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/v3/api-docs/**",
             "/configuration/ui",
@@ -51,12 +54,19 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/webjars/**",
             "/file/**",
-            "/image/**",
+            "/images/**",
+            "/css/**",
+            "/js/**",
             "/swagger/**",
             "/swagger-ui/**",
             "/swagger-ui/index.html",
             "/favicon.ico",
             "/h2/**"
+    };
+
+    public static final String[] OAUTH_WHITELIST = {
+            "/login/oauth2/code/**", "/oauth2/authorization/**", "/oauth2/**",
+            "/login/oauth2/**", "/"
     };
 
     // 비밀 번호 암호화
@@ -65,25 +75,27 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // AutenticationManager의 구현체로 ProviderManager 사용
+    // AuthenticationManager의 구현체로 ProviderManager 사용
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder)
-                .and()
-                .build();
+    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) throws Exception {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(userDetailsService);
+
+        // 다른 AuthenticationProvider 만들면 아래 리스트에 추가
+        List<AuthenticationProvider> providers = List.of(provider);
+        return new ProviderManager(providers);
     }
 
     @Bean
-    public CorsConfigurationSource getCorsConfiguration() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowCredentials(false);
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setMaxAge(3600L);
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "refresh-token"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh-Token"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -93,17 +105,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 보안 설정 비활성화
-        http.csrf((csrf) -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
+        // CORS
         http.cors(withDefaults());
-
+        // Session
+        http.sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+        // Form Login
+        http.formLogin(AbstractHttpConfigurer::disable);
+        // Http Basic
+        http.httpBasic(AbstractHttpConfigurer::disable);
+        // Exception Handling
         http.exceptionHandling((exception) -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler));
         // Http Security 설정 구성
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/member/login", "/member/signup",  "/member/signup/email", "/member/signup/email/verify").permitAll()
-                .requestMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated())
+                        .requestMatchers("/member/login", "/member/signup", "/member/signup/email", "/member/signup/email/verify").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(OAUTH_WHITELIST).permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionHandlerFilter, JwtAuthenticationFilter.class);
 

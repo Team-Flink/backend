@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import spring.flink.domain.common.BaseEntity;
 import spring.flink.domain.enums.MemberRole;
 import spring.flink.domain.enums.MemberStatus;
+import spring.flink.domain.enums.Social;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(10) DEFAULT 'LOCAL'")
+    private Social social;
 
     @Column(nullable = false, columnDefinition = "varchar(20)")
     private String nickname;
